@@ -1,4 +1,4 @@
-# 🧠 E2M AI Lead Generation System
+# 🧠 AI Lead Generation System
 
 A comprehensive **AI-powered lead generation platform** that automates company research, business summarization, and personalized outreach email creation using advanced AI and web technologies.
 
@@ -229,17 +229,19 @@ Step 6: Results Compilation
 * Export: Results available for download
 
 # 🖼️ Screenshots
-<img width="1920" height="1080" alt="Screenshot 2025-11-05 093042" src="https://github.com/user-attachments/assets/c20248c2-9fca-4da1-8860-71468a304080" />
 
-<img width="1920" height="1080" alt="Screenshot 2025-11-05 093028" src="https://github.com/user-attachments/assets/2d02c9b4-6ed0-48b6-b158-e68b04d4b35f" />
+<img width="1920" height="1080" alt="Screenshot 2025-11-05 092728" src="https://github.com/user-attachments/assets/b43bc8f2-ea87-49dd-ba04-695ae3d42358" />
 
-<img width="1920" height="1080" alt="Screenshot 2025-11-05 093010" src="https://github.com/user-attachments/assets/c6b87654-e6cf-4f25-b597-4cc377ff8ffc" />
+<img width="1920" height="1080" alt="Screenshot 2025-11-05 092736" src="https://github.com/user-attachments/assets/6b05ab70-a36c-4ac3-b20f-9901d0098dc4" />
 
-<img width="1920" height="1080" alt="Screenshot 2025-11-05 092958" src="https://github.com/user-attachments/assets/3ae26514-65c7-488d-8c53-298151846c6a" />
+<img width="1920" height="1080" alt="Screenshot 2025-11-05 092942" src="https://github.com/user-attachments/assets/4e1071b3-f415-45cc-9224-9b8099275f4d" />
 
-<img width="1920" height="1080" alt="Screenshot 2025-11-05 092942" src="https://github.com/user-attachments/assets/ec18a7ee-60a6-47a2-a0dd-bacffffaca1d" />
+<img width="1920" height="1080" alt="Screenshot 2025-11-05 092958" src="https://github.com/user-attachments/assets/5d48d5b0-16d3-40f7-a3ea-814a81da8252" />
 
-<img width="1920" height="1080" alt="Screenshot 2025-11-05 092736" src="https://github.com/user-attachments/assets/88abab06-2d90-461f-86fe-b64c02c849e9" />
+<img width="1920" height="1080" alt="Screenshot 2025-11-05 093010" src="https://github.com/user-attachments/assets/14bcabe5-b11f-457f-b6f2-bcd90b58b892" />
 
-<img width="1920" height="1080" alt="Screenshot 2025-11-05 092728" src="https://github.com/user-attachments/assets/354aff0b-76a9-41a4-9c01-798c2c1f9885" />
+<img width="1920" height="1080" alt="Screenshot 2025-11-05 093028" src="https://github.com/user-attachments/assets/b47ef6bb-fed0-4b3c-aadc-dcda3723215b" />
+
+<img width="1920" height="1080" alt="Screenshot 2025-11-05 093042" src="https://github.com/user-attachments/assets/0907796a-8f94-485f-9316-cd7eaf2f1fc3" />
+
 
