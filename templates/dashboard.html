@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - E2M AI Lead Generation{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h1>
+            <div class="btn-group">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-plus me-2"></i>New Generation
+                </a>
+                <a href="{{ url_for('analytics') }}" class="btn btn-outline-success">
+                    <i class="fas fa-chart-bar me-2"></i>View Analytics
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="metric-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <h2>{{ analytics.total_leads_processed }}</h2>
+            <p>Total Leads Processed</p>
+            <i class="fas fa-users fa-2x mt-2"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+            <h2>{{ analytics.successful_generations }}</h2>
+            <p>Successful Generations</p>
+            <i class="fas fa-check-circle fa-2x mt-2"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+            <h2>{{ analytics.failed_generations }}</h2>
+            <p>Failed Generations</p>
+            <i class="fas fa-exclamation-triangle fa-2x mt-2"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+            <h2>{{ "%.2f"|format(analytics.average_processing_time) }}s</h2>
+            <p>Avg Processing Time</p>
+            <i class="fas fa-clock fa-2x mt-2"></i>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-rocket feature-icon"></i>
+                                <h5>Generate New Leads</h5>
+                                <p>Start a new AI lead generation workflow</p>
+                                <a href="{{ url_for('index') }}" class="btn btn-primary">Get Started</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-chart-bar feature-icon"></i>
+                                <h5>View Analytics</h5>
+                                <p>Detailed performance metrics and charts</p>
+                                <a href="{{ url_for('analytics') }}" class="btn btn-success">View Analytics</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Leads Processed</th>
+                                <th>Successful</th>
+                                <th>Failed</th>
+                                <th>Success Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for date, stats in analytics.daily_stats.items()|sort(reverse=true) %}
+                            <tr>
+                                <td>{{ date }}</td>
+                                <td>{{ stats.leads_processed }}</td>
+                                <td><span class="text-success">{{ stats.successful }}</span></td>
+                                <td><span class="text-danger">{{ stats.failed }}</span></td>
+                                <td>
+                                    {% set success_rate = (stats.successful / stats.leads_processed * 100) if stats.leads_processed > 0 else 0 %}
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-success" style="width: {{ success_rate }}%"></div>
+                                    </div>
+                                    <small>{{ "%.1f"|format(success_rate) }}%</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>System Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>AI Service:</strong>
+                    <span class="badge bg-success float-end">Operational</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Database:</strong>
+                    <span class="badge bg-success float-end">Connected</span>
+                </div>
+                <div class="mb-3">
+                    <strong>API Services:</strong>
+                    <span class="badge bg-success float-end">Active</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Last Update:</strong>
+                    <span class="text-muted float-end">{{ analytics.daily_stats.keys()|first if analytics.daily_stats else 'N/A' }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Performance Tips</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Pro Tip:</strong> Filter by industry for more relevant results
+                </div>
+                <div class="alert alert-warning">
+                    <i class="fas fa-clock me-2"></i>
+                    <strong>Timing:</strong> Process 5-10 leads for optimal performance
+                </div>
+                <div class="alert alert-success">
+                    <i class="fas fa-chart-line me-2"></i>
+                    <strong>Analytics:</strong> Check analytics to track your success rates
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Results - E2M AI Lead Generation{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center py-4">
+                <h1 class="display-5 fw-bold mb-3"><i class="fas fa-check-circle me-3"></i>Workflow Completed</h1>
+                <p class="lead mb-0">Generated on: {{ results.timestamp }}</p>
+                {% if results.filters %}
+                <p class="mb-0">
+                    <small>Filters: {{ results.filters.lead_count }} leads | 
+                    {{ results.filters.industry_filter }} | {{ results.filters.email_type }}</small>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="metric-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <h2>{{ results.metrics.total_processed }}</h2>
+            <p>Total Processed</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+            <h2>{{ results.metrics.completed }}</h2>
+            <p>Completed</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+            <h2>{{ results.metrics.skipped }}</h2>
+            <p>Skipped</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+            <h2>{{ results.metrics.errors }}</h2>
+            <p>Errors</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-clock text-primary fa-2x mb-3"></i>
+                <h3>{{ "%.2f"|format(results.metrics.average_processing_time) }}s</h3>
+                <p class="text-muted">Avg Processing Time</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-bolt text-warning fa-2x mb-3"></i>
+                <h3>{{ "%.2f"|format(results.metrics.total_processing_time) }}s</h3>
+                <p class="text-muted">Total Processing Time</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-percentage text-success fa-2x mb-3"></i>
+                <h3>{{ "%.1f"|format((results.metrics.completed / results.metrics.total_processed * 100) if results.metrics.total_processed > 0 else 0) }}%</h3>
+                <p class="text-muted">Success Rate</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-list me-2"></i>Detailed Results</h4>
+            </div>
+            <div class="card-body">
+                {% for result in results.processed_results %}
+                <div class="result-item {{ 'skipped' if result.status == 'Skipped' else 'error' if result.status == 'Error' else '' }}">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5>
+                                {% if result.status == 'Completed' %}
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                {% elif result.status == 'Skipped' %}
+                                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                {% else %}
+                                    <i class="fas fa-times-circle text-danger me-2"></i>
+                                {% endif %}
+                                {{ result.company }}
+                            </h5>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <p class="mb-1"><strong>Email:</strong> {{ result.email or 'N/A' }}</p>
+                                    <p class="mb-1"><strong>Website:</strong> {{ result.website or 'N/A' }}</p>
+                                    <p class="mb-1"><strong>Industry:</strong> {{ result.industry or 'N/A' }}</p>
+                                </div>
+                                <div class="col-sm-6">
+                                    <p class="mb-1"><strong>Location:</strong> {{ result.location or 'N/A' }}</p>
+                                    <p class="mb-1"><strong>Employees:</strong> {{ result.employees or 'N/A' }}</p>
+                                    <p class="mb-1"><strong>Revenue:</strong> {{ result.revenue or 'N/A' }}</p>
+                                </div>
+                            </div>
+                            <p class="mb-1"><strong>Status:</strong> 
+                                <span class="badge bg-{% if result.status == 'Completed' %}success{% elif result.status == 'Skipped' %}warning{% else %}danger{% endif %}">
+                                    {{ result.status }}
+                                </span>
+                            </p>
+                            {% if result.processing_time %}
+                            <p class="mb-1"><strong>Processing Time:</strong> {{ result.processing_time }}s</p>
+                            {% endif %}
+                            {% if result.error %}
+                            <p class="mb-1 text-danger"><strong>Error:</strong> {{ result.error }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-secondary mb-2">{{ result.industry or 'N/A' }}</span>
+                            {% if result.domain %}
+                            <br><span class="badge bg-info">{{ result.domain }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if result.status == 'Completed' %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6><i class="fas fa-file-alt me-2"></i>Business Summary:</h6>
+                            <div class="summary-box p-3 bg-light rounded">
+                                {{ result.summary }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6><i class="fas fa-envelope me-2"></i>Generated Email ({{ result.email_type }}):</h6>
+                            <div class="email-preview p-3 bg-light rounded">
+                                <pre style="white-space: pre-wrap; font-family: inherit;">{{ result.email_content }}</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <h6><i class="fas fa-cogs me-2"></i>Processing Steps:</h6>
+                            <ul class="list-group">
+                                {% for step in result.processing_steps %}
+                                <li class="list-group-item">{{ step }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg me-3">
+            <i class="fas fa-redo me-2"></i>Run Again
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-success btn-lg me-3">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+        </a>
+        <button class="btn btn-info btn-lg" onclick="exportResults()">
+            <i class="fas fa-download me-2"></i>Export Results
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function exportResults() {
+    alert('Export functionality would generate a detailed report with all lead information, summaries, and emails.');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const resultItems = document.querySelectorAll('.result-item');
+    resultItems.forEach(item => {
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', function() {
+            const details = this.querySelectorAll('.row.mt-3, .row.mt-2');
+            details.forEach(detail => {
+                if (detail.style.display === 'none') {
+                    detail.style.display = 'flex';
+                } else {
+                    detail.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

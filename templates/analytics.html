@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - E2M AI Lead Generation{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chart-container {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        height: 300px;
+    }
+    .stat-card {
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px;
+        color: white;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-chart-bar me-2"></i>Analytics Dashboard</h1>
+            <div class="btn-group">
+                <button class="btn btn-outline-primary" onclick="refreshCharts()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-success">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <h3>{{ analytics.total_leads_processed }}</h3>
+            <p>Total Leads</p>
+            <i class="fas fa-users fa-2x"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+            <h3>{{ analytics.successful_generations }}</h3>
+            <p>Successful</p>
+            <i class="fas fa-check-circle fa-2x"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+            <h3>{{ analytics.failed_generations }}</h3>
+            <p>Failed</p>
+            <i class="fas fa-exclamation-triangle fa-2x"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+            <h3>{{ "%.1f"|format((analytics.successful_generations / analytics.total_leads_processed * 100) if analytics.total_leads_processed > 0 else 0) }}%</h3>
+            <p>Success Rate</p>
+            <i class="fas fa-percentage fa-2x"></i>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="chart-container">
+            <h5 class="mb-3"><i class="fas fa-chart-line me-2"></i>Leads Processed (Last 7 Days)</h5>
+            <canvas id="leadsChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container">
+            <h5 class="mb-3"><i class="fas fa-chart-pie me-2"></i>Leads by Industry</h5>
+            <canvas id="industryChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="chart-container">
+            <h5 class="mb-3"><i class="fas fa-tachometer-alt me-2"></i>Success Rates</h5>
+            <canvas id="successChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-container">
+            <h5 class="mb-3"><i class="fas fa-clock me-2"></i>Processing Times</h5>
+            <canvas id="timeChart"></canvas>
+        </div>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-table me-2"></i>Detailed Performance Metrics</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Total Leads</th>
+                                <th>Successful</th>
+                                <th>Failed</th>
+                                <th>Success Rate</th>
+                                <th>Avg Processing Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for date, stats in analytics.daily_stats.items()|sort(reverse=true) %}
+                            <tr>
+                                <td>{{ date }}</td>
+                                <td>{{ stats.leads_processed }}</td>
+                                <td class="text-success">{{ stats.successful }}</td>
+                                <td class="text-danger">{{ stats.failed }}</td>
+                                <td>
+                                    {% set success_rate = (stats.successful / stats.leads_processed * 100) if stats.leads_processed > 0 else 0 %}
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-success" style="width: {{ success_rate }}%"></div>
+                                    </div>
+                                    <small>{{ "%.1f"|format(success_rate) }}%</small>
+                                </td>
+                                <td>{{ "%.2f"|format(analytics.average_processing_time) }}s</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const chartData = {{ chart_data|tojson }};
+
+function initializeCharts() {
+    const leadsCtx = document.getElementById('leadsChart').getContext('2d');
+    new Chart(leadsCtx, {
+        type: 'line',
+        data: {
+            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+            datasets: [{
+                label: 'Leads Processed',
+                data: chartData.daily_leads,
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+    const industryCtx = document.getElementById('industryChart').getContext('2d');
+    new Chart(industryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: chartData.industries,
+            datasets: [{
+                data: chartData.industry_counts,
+                backgroundColor: [
+                    '#667eea', '#28a745', '#ffc107', '#dc3545', '#17a2b8'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    const successCtx = document.getElementById('successChart').getContext('2d');
+    new Chart(successCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+            datasets: [{
+                label: 'Success Rate %',
+                data: chartData.success_rates,
+                backgroundColor: '#28a745',
+                borderColor: '#28a745',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Success Rate %'
+                    }
+                }
+            }
+        }
+    });
+    const timeCtx = document.getElementById('timeChart').getContext('2d');
+    new Chart(timeCtx, {
+        type: 'bar',
+        data: {
+            labels: Array.from({length: 10}, (_, i) => `Run ${i + 1}`),
+            datasets: [{
+                label: 'Processing Time (seconds)',
+                data: chartData.processing_times,
+                backgroundColor: '#17a2b8',
+                borderColor: '#17a2b8',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Seconds'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function refreshCharts() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        initializeCharts();
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-success alert-dismissible fade show mt-3';
+        alert.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>Charts updated successfully!
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.querySelector('.row.mt-4').before(alert);
+    }, 1000);
+}
+
+document.addEventListener('DOMContentLoaded', initializeCharts);
+</script>
+{% endblock %}

@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Home - E2M AI Lead Generation{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-dark text-white">
+            <div class="card-body text-center py-5">
+                <h1 class="display-4 fw-bold mb-4">AI-Powered Lead Generation</h1>
+                <p class="lead mb-4">Transform your outreach with intelligent lead research, business summarization, and personalized email generation</p>
+                <div class="row mt-5">
+                    <div class="col-md-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h4>AI Intelligence</h4>
+                        <p>Advanced AI analyzes companies and generates personalized content</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h4>Lightning Fast</h4>
+                        <p>Process hundreds of leads in minutes with automated workflows</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Smart Analytics</h4>
+                        <p>Track performance and optimize your outreach strategy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-play-circle me-2"></i>Start Lead Generation</h4>
+            </div>
+            <div class="card-body">
+                <form id="workflowForm">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="leadCount" class="form-label">Number of Leads</label>
+                                <input type="number" class="form-control" id="leadCount" value="5" min="1" max="10">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="industryFilter" class="form-label">Industry Filter</label>
+                                <select class="form-select" id="industryFilter">
+                                    <option value="all">All Industries</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Financial Technology">Financial Technology</option>
+                                    <option value="Education Technology">Education Technology</option>
+                                    <option value="Renewable Energy">Renewable Energy</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="emailType" class="form-label">Email Type</label>
+                                <select class="form-select" id="emailType">
+                                    <option value="partnership">Partnership Outreach</option>
+                                    <option value="collaboration">Collaboration Proposal</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success btn-lg w-100" id="runWorkflow">
+                        <i class="fas fa-rocket me-2"></i>Generate AI Leads
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div id="progressSection" class="mt-4" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-spinner fa-spin me-2"></i>Processing Leads...</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <div id="progressMessages"></div>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-eye me-2"></i>Sample Companies Database</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Industry</th>
+                                <th>Location</th>
+                                <th>Size</th>
+                                <th>Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>TechCorp Solutions</strong></td>
+                                <td><span class="badge bg-primary">Technology</span></td>
+                                <td>India,IN</td>
+                                <td>500-1000 employees</td>
+                                <td>info@techcorp.com</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GreenEnergy Inc</strong></td>
+                                <td><span class="badge bg-success">Renewable Energy</span></td>
+                                <td>India,IN</td>
+                                <td>200-500 employees</td>
+                                <td>contact@greenenergy.org</td>
+                            </tr>
+                            <tr>
+                                <td><strong>MediCare Systems</strong></td>
+                                <td><span class="badge bg-info">Healthcare</span></td>
+                                <td>India,IN</td>
+                                <td>1000-5000 employees</td>
+                                <td>support@medicaresys.com</td>
+                            </tr>
+                            <tr>
+                                <td><strong>FinTech Global</strong></td>
+                                <td><span class="badge bg-warning">Financial Technology</span></td>
+                                <td>India,IN</td>
+                                <td>500-1000 employees</td>
+                                <td>info@fintechglobal.com</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const workflowForm = document.getElementById('workflowForm');
+    const progressSection = document.getElementById('progressSection');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressMessages = document.getElementById('progressMessages');
+    
+    workflowForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const leadCount = document.getElementById('leadCount').value;
+        const industryFilter = document.getElementById('industryFilter').value;
+        const emailType = document.getElementById('emailType').value;
+        const runButton = document.getElementById('runWorkflow');
+        progressSection.style.display = 'block';
+        runButton.disabled = true;
+        runButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        
+        progressBar.style.width = '0%';
+        progressMessages.innerHTML = '';
+        
+        try {
+            const formData = new FormData();
+            formData.append('lead_count', leadCount);
+            formData.append('industry_filter', industryFilter);
+            formData.append('email_type', emailType);
+            
+            const response = await fetch('/run_workflow', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                simulateProgress(progressBar, progressMessages, () => {
+                    window.location.href = '/results';
+                });
+            } else {
+                throw new Error(result.error);
+            }
+            
+        } catch (error) {
+            progressMessages.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Error: ${error.message}
+                </div>
+            `;
+            runButton.disabled = false;
+            runButton.innerHTML = '<i class="fas fa-rocket me-2"></i>Generate AI Leads';
+        }
+    });
+    
+    function simulateProgress(progressBar, progressMessages, callback) {
+        const steps = [
+            { width: 10, message: '🚀 Initializing AI workflow...' },
+            { width: 25, message: '📥 Fetching lead data from database...' },
+            { width: 40, message: '🔍 Analyzing company information...' },
+            { width: 55, message: '🌐 Extracting domain and contact details...' },
+            { width: 70, message: '🤖 Generating AI business summaries...' },
+            { width: 85, message: '✉️ Creating personalized outreach emails...' },
+            { width: 95, message: '📊 Compiling results and analytics...' },
+            { width: 100, message: '✅ Workflow completed! Redirecting...' }
+        ];
+        
+        let currentStep = 0;
+        
+        function updateProgress() {
+            if (currentStep < steps.length) {
+                const step = steps[currentStep];
+                progressBar.style.width = step.width + '%';
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'alert alert-info mb-2';
+                messageDiv.innerHTML = `<i class="fas fa-info-circle me-2"></i>${step.message}`;
+                progressMessages.appendChild(messageDiv);
+                
+                progressMessages.scrollTop = progressMessages.scrollHeight;
+                
+                currentStep++;
+                setTimeout(updateProgress, 800);
+            } else {
+                setTimeout(callback, 1000);
+            }
+        }
+        
+        updateProgress();
+    }
+});
+</script>
+{% endblock %}
